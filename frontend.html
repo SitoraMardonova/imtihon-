@@ -1,0 +1,39 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Churn Prediction</title>
+</head>
+<body>
+    <h1>Churn Prediction Form</h1>
+    <form id="predictForm">
+        <label>tenure: <input type="number" name="tenure"></label><br>
+        <label>MonthlyCharges: <input type="number" name="MonthlyCharges"></label><br>
+        <label>TotalCharges: <input type="number" name="TotalCharges"></label><br>
+        <button type="submit">Predict</button>
+    </form>
+    <p id="result"></p>
+
+    <script>
+    document.getElementById('predictForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const jsonData = {};
+        formData.forEach((value, key) => {
+            jsonData[key] = parseFloat(value);
+        });
+
+        fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(jsonData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('result').innerText = 
+                `Churn: ${data.churn ? 'Yes' : 'No'}, Probability: ${data.probability}`;
+        });
+    });
+    </script>
+</body>
+</html>
